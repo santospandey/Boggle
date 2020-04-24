@@ -1,0 +1,2 @@
+class GameContainerController < ApplicationController
+end
