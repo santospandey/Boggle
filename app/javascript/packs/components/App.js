@@ -4,7 +4,7 @@ import Board from "./Board"
 class App extends Component{
     constructor(){
         super()
-    }
+    }    
 
     render(){
         return(
