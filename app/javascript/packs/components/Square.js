@@ -7,8 +7,9 @@ class Square extends Component{
     }
 
     render(){
+        console.log("props ", this.props.data);
         return(
-            <span className={css.square}>{this.props.data}</span>
+            <span className={css.square}>{this.props.data.data}</span>
         )
     }
 }

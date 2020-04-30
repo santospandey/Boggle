@@ -11,8 +11,9 @@ class Board extends Component {
     }
 
     componentDidMount() {
-        axios.get("http://localhost:3000/random_characters")            
-            .then((data) => {                
+        console.log("mounting component ")
+        axios.get("http://localhost:3000/random_characters")
+            .then((data) => {                  
                 this.setState({
                     data: data.data.board
                 })
@@ -28,22 +29,26 @@ class Board extends Component {
 
     //         return <div key={i}>{squares}</div>
 
-    getDOM() {
-        return this.state.data.map((arr, i) => {
-            return <div key={i}>{                
-                arr.split("").map((char, j) => <Square data={char} key={i+"-"+j}/>)
-            }
-            </div>
-        })        
+
+
+    getDOM() {   
+        if(this.state.data.length === 0){
+            return ""
+        }             
+        const board = this.state.data.map((subarr, i) => {
+            // let squares = subarr.split("").map((elem, j) => <Square key={`${i}-${j}`} data={elem}/>)            
+            // return <div key={i}>{squares}</div>
+            return <div key={i}>Hello world{i}</div>
+        })
+
+        console.log("board ", board)
+        return <div>{board}</div>
     }
 
-    render() {
-        const board = this.getDOM()
-        console.log("baord ", board)
+    render() {        
+        const board = this.getDOM()                    
         return (
-            <div>
-                { board }
-            </div>            
+            {board}
         )
     }
 }
