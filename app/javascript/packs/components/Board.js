@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import Square from "./Square"
 import BoardData from "./BoardData"
+import graph from "./GraphData"
 
 class Board extends Component {
     constructor() {
@@ -17,31 +18,19 @@ class Board extends Component {
     */
     componentDidMount() {
         this.setState((prevState) => {
-            const newStateData = prevState.data.map((data) => {
-                return data.map(() => {
+            const newStateData = prevState.data.map((data, i) => {
+                return data.map((data, j) => {
                     return {
                         character: this.getRandomCharacter(),
-                        selected: false
+                        selected: false,
+                        coordinate: `${i}${j}`,
+                        visited: false,
+                        distance: null,
+                        parentCoordinate: null
                     }
                 })
             })
-
-            let graph = {}
-            for (let i = 0; i < newStateData.length; ++i) {
-                for (let j = 0; j < newStateData[i].length; ++j) {
-                    let key = newStateData[i][j].character
-                    let adjElems = this.getAdjacentElements(i, j, newStateData)
-                    if (graph.hasOwnProperty(key)) {
-                        graph[key] = [...graph[key], ...adjElems]
-                    }
-                    else {
-                        graph[key] = adjElems
-                    }
-                }
-            }
-
-            console.log("graph ", graph)
-
+            
             return {
                 graph,
                 data: newStateData
@@ -49,21 +38,7 @@ class Board extends Component {
         })
     }
 
-    getAdjacentElements(i, j, stateData) {
-        let adjacentMatrix = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]]
-        let adjacentElements = []
-        for (let matrix of adjacentMatrix) {
-            let row = i + matrix[0];
-            let col = j + matrix[1];
-            if (row < 4 && row > -1) {
-                if (col < 4 && col > -1) {
-                    adjacentElements.push({ ...stateData[row][col], row, col })
-                }
-            }
-        }
-        return adjacentElements
-    }
-
+    
     /**
      * Select Random character from Letter A to Z
      */
@@ -90,30 +65,85 @@ class Board extends Component {
     }
 
 
-    search(event) {
-        let valid = true
-        if (event.keyCode === 13) {
-            const inputString = event.target.value.toUpperCase()
-            const inputLength = inputString.length            
-            if (inputLength) {
-                let i = 0;
-                while (i < (inputLength - 1)) {
-                    const currentChar = inputString[i]
-                    const nextChar = inputString[i+1]
-                    if (!this.state.graph[currentChar]) {
-                        valid = false
-                        break;
-                    }                      
-                    const adjacentString = this.state.graph[currentChar].map((e)=>e.character).join("")
-                    if(!adjacentString.includes(nextChar)){
-                        valid = false;
-                        break;
-                    }
-                    ++i;
+    getCoordinates(char) {
+        let filteredData = []
+        for (let arr of this.state.data) {
+            for (let elem of arr) {
+                if (elem.character === char.toUpperCase()) {
+                    filteredData.push(elem)
                 }
             }
+        }
 
-            (valid === true) ? console.log("valid") : console.log("invalid")
+        return filteredData
+    }
+
+
+    search(event) {        
+        if (event.keyCode === 13) {
+            let string = event.target.value.toUpperCase()
+
+            // queue hold info about nodes.
+            let bfsInfo = []
+            let startInfo = this.getCoordinates(string[0])
+
+            bfsInfo.push(...startInfo)
+
+            let found = false;
+            let i = 0;
+            while (i < bfsInfo.length) {
+                if ((bfsInfo[i].character) === (string[string.length - 1])) {
+                    found = true;
+                    console.log("found")
+                    break;
+                }
+
+                var neighbours = this.state.graph[bfsInfo[i].coordinate];
+
+                if (neighbours.length) {
+                    var index = string.indexOf(bfsInfo[i].character);
+                    var nextChar = ""
+                    if (index < (string.length - 1)) {
+                        nextChar = string[index + 1];
+                    }                    
+                    
+                    var neighboursInfo = neighbours.filter((d) => {
+                        let coords = d.split("").map(elem => parseInt(elem));
+                        let element = this.state.data[coords[0]][coords[1]];
+                        return !element.visited && (element.character === nextChar.toUpperCase())
+                    }).map(d=>{
+                        let chCoords = d.split("").map(e=>parseInt(e));
+                        return {
+                            character: this.state.data[chCoords[0]][chCoords[1]].character,
+                            coordinate: d,
+                            distance: i+1,
+                            visited: true,
+                            parentCoordinate: bfsInfo[i].coordinate,
+                            parentCoordinateIndex: i
+                        }
+                    })
+
+                    bfsInfo.push(...neighboursInfo)                                        
+
+                    let coords = bfsInfo[i].coordinate.split("").map(e=>parseInt(e));
+                    this.state.data[coords[0]][coords[1]].visited = true;
+                }
+                ++i;
+            }
+            if(found){                
+                let index = bfsInfo.length - 1;   
+                this.setState((prevState) => {                                        
+                    console.log("bfs info ", bfsInfo);
+                    while(index || (index === 0)){
+                        let lastItem = bfsInfo[index];
+                        let coords = lastItem.coordinate.split("");
+                        prevState.data[coords[0]][coords[1]].selected = true;
+                        index = lastItem.parentCoordinateIndex;
+                    }
+                    console.log("index ", index)
+                    return prevState
+                })                             
+            }
         }
     }
 
