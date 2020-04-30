@@ -33,7 +33,7 @@ class Board extends Component {
                     }
                 })
             })
-            
+
             return {
                 count: prevState.count,
                 graph,
@@ -42,7 +42,7 @@ class Board extends Component {
         })
     }
 
-    
+
     /**
      * Select Random character from Letter A to Z
      */
@@ -83,10 +83,10 @@ class Board extends Component {
     }
 
 
-    search(event) {        
-        if (event.keyCode === 13) {                        
+    search(event) {
+        if (event.keyCode === 13) {
             let string = event.target.value.toUpperCase()
-                        
+
             // queue hold info about nodes.
             let bfsInfo = []
             let startInfo = this.getCoordinates(string[0])
@@ -109,43 +109,57 @@ class Board extends Component {
                     var nextChar = ""
                     if (index < (string.length - 1)) {
                         nextChar = string[index + 1];
-                    }                    
-                    
+                    }
+
                     var neighboursInfo = neighbours.filter((d) => {
                         let coords = d.split("").map(elem => parseInt(elem));
                         let element = this.state.data[coords[0]][coords[1]];
                         return !element.visited && (element.character === nextChar.toUpperCase())
-                    }).map(d=>{
-                        let chCoords = d.split("").map(e=>parseInt(e));
+                    }).map(d => {
+                        let chCoords = d.split("").map(e => parseInt(e));
                         return {
                             character: this.state.data[chCoords[0]][chCoords[1]].character,
                             coordinate: d,
-                            distance: i+1,
+                            distance: i + 1,
                             visited: true,
                             parentCoordinate: bfsInfo[i].coordinate,
                             parentCoordinateIndex: i
                         }
                     })
 
-                    bfsInfo.push(...neighboursInfo)                                        
+                    bfsInfo.push(...neighboursInfo)
 
-                    let coords = bfsInfo[i].coordinate.split("").map(e=>parseInt(e));
+                    let coords = bfsInfo[i].coordinate.split("").map(e => parseInt(e));
                     this.state.data[coords[0]][coords[1]].visited = true;
                 }
                 ++i;
             }
-            if(found){                
-                let index = bfsInfo.length - 1;
-                this.setState((prevState) => {                   
-                    while(index || (index === 0)){
-                        let lastItem = bfsInfo[index];
-                        let coords = lastItem.coordinate.split("");
-                        prevState.data[coords[0]][coords[1]].selected = true;
-                        index = lastItem.parentCoordinateIndex;
-                    }                    
-                    prevState.count += 1;
-                    return prevState
-                })                             
+            console.log(bfsInfo)
+            if (found) {
+                // calls api to check if word present in dictionary
+                fetch("http://localhost:3000/word/" + string)
+                    .then(data => data.json())
+                    .then(data => {                        
+                        if (data.isTrue) {
+                            let index = bfsInfo.length - 1;
+                            this.setState((prevState) => {
+                                prevState.data.forEach(elements => {
+                                    elements.forEach(element => {
+                                        element.selected = false;
+                                    })
+                                });
+
+                                while (index || (index === 0)) {
+                                    let lastItem = bfsInfo[index];
+                                    let coords = lastItem.coordinate.split("");
+                                    prevState.data[coords[0]][coords[1]].selected = true;
+                                    index = lastItem.parentCoordinateIndex;
+                                }
+                                prevState.count += 1;
+                                return prevState
+                            })
+                        }
+                    })
             }
         }
     }
