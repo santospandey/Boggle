@@ -2,11 +2,14 @@ import React, { Component } from "react"
 import Square from "./Square"
 import BoardData from "./BoardData"
 import graph from "./GraphData"
+import Search from "./Search"
+import Counter from "./Counter"
 
 class Board extends Component {
     constructor() {
         super()
         this.state = {
+            count: 0,
             data: BoardData,
             graph: {}
         }
@@ -32,6 +35,7 @@ class Board extends Component {
             })
             
             return {
+                count: prevState.count,
                 graph,
                 data: newStateData
             }
@@ -80,9 +84,9 @@ class Board extends Component {
 
 
     search(event) {        
-        if (event.keyCode === 13) {
+        if (event.keyCode === 13) {                        
             let string = event.target.value.toUpperCase()
-
+                        
             // queue hold info about nodes.
             let bfsInfo = []
             let startInfo = this.getCoordinates(string[0])
@@ -131,16 +135,15 @@ class Board extends Component {
                 ++i;
             }
             if(found){                
-                let index = bfsInfo.length - 1;   
-                this.setState((prevState) => {                                        
-                    console.log("bfs info ", bfsInfo);
+                let index = bfsInfo.length - 1;
+                this.setState((prevState) => {                   
                     while(index || (index === 0)){
                         let lastItem = bfsInfo[index];
                         let coords = lastItem.coordinate.split("");
                         prevState.data[coords[0]][coords[1]].selected = true;
                         index = lastItem.parentCoordinateIndex;
-                    }
-                    console.log("index ", index)
+                    }                    
+                    prevState.count += 1;
                     return prevState
                 })                             
             }
@@ -162,10 +165,8 @@ class Board extends Component {
         return (
             <div>
                 {board}
-                <div style={{ padding: 10 }}>
-                    <label>Find word:</label>
-                    <input type="text" name="searchWord" onKeyDown={this.search} />
-                </div>
+                <Search search={this.search} />
+                <Counter count={this.state.count} />
             </div>
         )
     }
