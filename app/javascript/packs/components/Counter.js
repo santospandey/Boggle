@@ -2,7 +2,9 @@ import React from "react"
 
 function Counter(props) {
     return (
-        <h1>{props.count}</h1>
+        <div>
+            <span>Score:</span>&nbsp;<strong style={{fontSize: 24}}>{props.count}</strong>
+        </div>        
     )
 }
 

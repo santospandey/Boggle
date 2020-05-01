@@ -3,11 +3,14 @@ import Square from "./Square"
 import Search from "./Search"
 import Counter from "./Counter"
 import Words from "./Words"
+import Timer from "./Timer"
+import cssModule from "../css/style.module.css"
 
 class Board extends Component {
     constructor() {
         super()
         this.state = {
+            start: false,
             size: 4,
             count: 0,
             data: [],
@@ -16,15 +19,23 @@ class Board extends Component {
         }
         this.handleClick = this.handleClick.bind(this)
         this.search = this.search.bind(this)
+        this.initialize = this.initialize.bind(this)
     }
 
     /* Initialize the Game Board with random characters
     */
     componentDidMount() {
+        // this.initialize()
+    }
+
+    initialize() {
         this.setState((prevState) => {
-            return {                
+            return {
+                count: 0,
+                start: true,
                 graph: this.generateGraph(prevState.size),
-                data: this.generateData(prevState.size)
+                data: this.generateData(prevState.size),
+                validWords: []
             }
         })
     }
@@ -40,7 +51,7 @@ class Board extends Component {
         return graph;
     }
 
-    generateData(n){
+    generateData(n) {
         return Array.from(Array(n).keys()).map(() => {
             return Array.from(Array(n).keys()).map(() => {
                 return {
@@ -74,11 +85,13 @@ class Board extends Component {
     handleClick(squareObj) {
         const row = squareObj.i
         const col = squareObj.j
-        this.setState((prevState) => {
-            let newState = JSON.parse(JSON.stringify(prevState))
-            newState.data[row][col].selected = !newState.data[row][col].selected
-            return newState
-        })
+        console.log("square obj ", squareObj);
+
+        // this.setState((prevState) => {
+        //     let newState = JSON.parse(JSON.stringify(prevState))
+        //     newState.data[row][col].selected = !newState.data[row][col].selected
+        //     return newState
+        // })
     }
 
 
@@ -107,7 +120,7 @@ class Board extends Component {
                 return;
             }
 
-            if(this.state.validWords.includes(string)){
+            if (this.state.validWords.includes(string)) {
                 alert("Repeated words");
                 return;
             }
@@ -219,6 +232,21 @@ class Board extends Component {
     }
 
 
+    start() {
+        console.log("Timer Starting...")
+        this.initialize()
+    }
+
+    stop() {
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                start: false
+            }
+        })
+    }
+
+
     render() {
         const board = this.state.data.map((subarr, i) => {
             let squares = subarr.map((elem, j) =>
@@ -228,14 +256,22 @@ class Board extends Component {
                 />)
 
             return <div key={i}>{squares}</div>
-        })
+        })        
 
         return (
-            <div>
-                {board}
-                <Search search={this.search} />
-                <Counter count={this.state.count} />
-                <Words data={this.state.validWords} />
+            <div className={cssModule.container}>
+                <div>
+                    {this.state.start ?
+                    <div>
+                        {board}
+                        <Search search={this.search} />
+                    </div> : ""}
+                </div>
+                <div>
+                    <Timer start={() => this.start()} stop={() => this.stop()} />
+                    <Counter count={this.state.count} />
+                    <Words data={this.state.validWords} />
+                </div>
             </div>
         )
     }

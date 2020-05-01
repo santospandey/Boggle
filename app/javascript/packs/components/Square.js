@@ -7,11 +7,7 @@ class Square extends Component {
         this.state = {
 
         }        
-    }
-
-    componentDidMount() {
-
-    }    
+    }   
 
     render() {
         let styleObj = {
