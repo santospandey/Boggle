@@ -50,7 +50,7 @@ class Timer extends Component {
     render() {
         return (
             <div>
-                <h3>{Math.floor(this.state.time / 60)}:{this.state.time % 60}</h3>
+                <h3>{Math.floor((120-this.state.time) / 60)}:{(120-this.state.time) % 60}</h3>
                 {this.props.display? "":<button type="button" onClick={this.start}>Start</button>}
             </div>
         )

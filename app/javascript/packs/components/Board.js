@@ -90,14 +90,15 @@ class Board extends Component {
 
 
     search(event) {
+        event.persist();
         if (event.keyCode === 13) {
             let string = event.target.value.toUpperCase()
 
             /**
              * String should have minimum length 3
              */
-            if (string.length < 3) {
-                alert("Please enter string at least 3 characters");
+            if (string.length < 2) {
+                alert("Please enter string at least 2 characters");
                 return;
             }
 
@@ -183,13 +184,13 @@ class Board extends Component {
                 console.log("Not found");
             }
 
-            if (found) {
-                event.target.value = ""
+            if (found) {                
                 // calls api to check if word present in dictionary
                 fetch("http://localhost:3000/word/" + string)
                     .then(data => data.json())
                     .then(data => {
                         if (data.isTrue) {
+                            event.target.value = "" // reset input box
                             this.setState((prevState) => {
                                 prevState.data.forEach(elements => {
                                     elements.forEach(element => {
@@ -204,7 +205,7 @@ class Board extends Component {
 
                                 prevState.validWords.push(string);
 
-                                prevState.count += 1;
+                                prevState.count += string.length;
                                 return prevState
                             })
                         }
