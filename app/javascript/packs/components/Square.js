@@ -6,8 +6,8 @@ class Square extends Component {
         super()
         this.state = {
 
-        }        
-    }   
+        }
+    }
 
     render() {
         let styleObj = {
@@ -18,7 +18,7 @@ class Square extends Component {
             <span
                 style={styleObj}
                 className={cssModule.square}
-                onClick={() => this.props.handleClick(this.props.data)}>
+            >
                 {this.props.data.character}
             </span>
         )

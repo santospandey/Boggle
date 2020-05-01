@@ -16,8 +16,7 @@ class Board extends Component {
             data: [],
             graph: {},
             validWords: []
-        }
-        this.handleClick = this.handleClick.bind(this)
+        }        
         this.search = this.search.bind(this)
         this.initialize = this.initialize.bind(this)
     }
@@ -74,25 +73,7 @@ class Board extends Component {
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         const index = Math.floor(Math.random() * 26)
         return letters[index]
-    }
-
-    /**
-     * 
-     * @param {*} squareObj contains data about indivisual square
-     * handle click when indivisual square is clicked. basically invert selected property
-     * 
-     */
-    handleClick(squareObj) {
-        const row = squareObj.i
-        const col = squareObj.j
-        console.log("square obj ", squareObj);
-
-        // this.setState((prevState) => {
-        //     let newState = JSON.parse(JSON.stringify(prevState))
-        //     newState.data[row][col].selected = !newState.data[row][col].selected
-        //     return newState
-        // })
-    }
+    }    
 
 
     getCoordinates(char) {
@@ -203,6 +184,7 @@ class Board extends Component {
             }
 
             if (found) {
+                event.target.value = ""
                 // calls api to check if word present in dictionary
                 fetch("http://localhost:3000/word/" + string)
                     .then(data => data.json())
@@ -250,7 +232,7 @@ class Board extends Component {
     render() {
         const board = this.state.data.map((subarr, i) => {
             let squares = subarr.map((elem, j) =>
-                <Square handleClick={this.handleClick}
+                <Square
                     key={`${i}-${j}`}
                     data={{ ...elem, i, j }}
                 />)
@@ -268,7 +250,7 @@ class Board extends Component {
                     </div> : ""}
                 </div>
                 <div>
-                    <Timer start={() => this.start()} stop={() => this.stop()} />
+                    <Timer display={this.state.start} start={() => this.start()} stop={() => this.stop()} />
                     <Counter count={this.state.count} />
                     <Words data={this.state.validWords} />
                 </div>
