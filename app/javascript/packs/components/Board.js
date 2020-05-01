@@ -1,17 +1,18 @@
 import React, { Component } from "react"
 import Square from "./Square"
-import BoardData from "./BoardData"
-import graph from "./GraphData"
 import Search from "./Search"
 import Counter from "./Counter"
+import Words from "./Words"
 
 class Board extends Component {
     constructor() {
         super()
         this.state = {
+            size: 4,
             count: 0,
-            data: BoardData,
-            graph: {}
+            data: [],
+            graph: {},
+            validWords: []
         }
         this.handleClick = this.handleClick.bind(this)
         this.search = this.search.bind(this)
@@ -21,27 +22,39 @@ class Board extends Component {
     */
     componentDidMount() {
         this.setState((prevState) => {
-            const newStateData = prevState.data.map((data, i) => {
-                return data.map((data, j) => {
-                    return {
-                        character: this.getRandomCharacter(),
-                        selected: false,
-                        coordinate: `${i}${j}`,
-                        visited: false,
-                        distance: null,
-                        parentCoordinate: null
-                    }
-                })
-            })
-
-            return {
-                count: prevState.count,
-                graph,
-                data: newStateData
+            return {                
+                graph: this.generateGraph(prevState.size),
+                data: this.generateData(prevState.size)
             }
         })
     }
 
+
+    generateGraph(n) {
+        let graph = {}
+        Array.from(Array(n).keys()).map((i) => {
+            return Array.from(Array(n).keys()).map((j) => {
+                graph[`${i}${j}`] = this.getNeighbors(i, j, n)
+            })
+        })
+        return graph;
+    }
+
+    generateData(n){
+        return Array.from(Array(n).keys()).map(() => {
+            return Array.from(Array(n).keys()).map(() => {
+                return {
+                    character: this.getRandomCharacter(),
+                    selected: false
+                }
+            })
+        })
+    }
+
+    getNeighbors(row, col, total) {
+        const neighbourMatrix = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+        return neighbourMatrix.map((m) => [m[0] + row, m[1] + col]).filter((item) => (((item[0] > -1) && (item[0] < total)) && ((item[1] > -1) && (item[1] < total)))).map((d) => `${d[0]}${d[1]}`)
+    }
 
     /**
      * Select Random character from Letter A to Z
@@ -71,14 +84,13 @@ class Board extends Component {
 
     getCoordinates(char) {
         let filteredData = []
-        for (let arr of this.state.data) {
-            for (let elem of arr) {
-                if (elem.character === char.toUpperCase()) {
-                    filteredData.push(elem)
+        for (let i = 0; i < this.state.data.length; i++) {
+            for (let j = 0; j < this.state.data[i].length; j++) {
+                if (this.state.data[i][j].character === char) {
+                    filteredData.push(`${i}${j}`)
                 }
             }
         }
-
         return filteredData
     }
 
@@ -87,61 +99,102 @@ class Board extends Component {
         if (event.keyCode === 13) {
             let string = event.target.value.toUpperCase()
 
+            /**
+             * String should have minimum length 3
+             */
+            if (string.length < 3) {
+                alert("Please enter string at least 3 characters");
+                return;
+            }
+
+            if(this.state.validWords.includes(string)){
+                alert("Repeated words");
+                return;
+            }
+
             // queue hold info about nodes.
             let bfsInfo = []
-            let startInfo = this.getCoordinates(string[0])
-
-            bfsInfo.push(...startInfo)
-
-            let found = false;
-            let i = 0;
-            while (i < bfsInfo.length) {
-                if ((bfsInfo[i].character) === (string[string.length - 1])) {
-                    found = true;
-                    console.log("found")
-                    break;
+            let startNodes = this.getCoordinates(string[0]).map((d, index) => {
+                return {
+                    character: string[0],
+                    fullString: string[0],
+                    coordinate: d,
+                    coordinateHistory: [d],
+                    parentCoordinateIndex: index
                 }
+            })
 
+            bfsInfo.push(...startNodes)
+
+            let i = 0;
+            let found = false;
+            let finalNode = null;
+
+            while (i < bfsInfo.length) {
+                /**
+                 * Find all neighbours of current character in queue.
+                */
                 var neighbours = this.state.graph[bfsInfo[i].coordinate];
 
+                /**
+                 * If neighbours are present or if neighbours arrary has length > 0.
+                 */
                 if (neighbours.length) {
-                    var index = string.indexOf(bfsInfo[i].character);
-                    var nextChar = ""
-                    if (index < (string.length - 1)) {
-                        nextChar = string[index + 1];
-                    }
-
                     var neighboursInfo = neighbours.filter((d) => {
                         let coords = d.split("").map(elem => parseInt(elem));
-                        let element = this.state.data[coords[0]][coords[1]];
-                        return !element.visited && (element.character === nextChar.toUpperCase())
+                        let character = this.state.data[coords[0]][coords[1]].character;
+
+                        /**
+                         * Search from coordinate history whether this coordinate is present 
+                         */
+                        let parentCoords = bfsInfo[i].coordinateHistory;
+                        let nextChar = string[parentCoords.length];
+
+                        let index = parentCoords.indexOf(d);
+                        return (index < 0) && (character === nextChar)
                     }).map(d => {
                         let chCoords = d.split("").map(e => parseInt(e));
+                        let coords = [...bfsInfo[i].coordinateHistory, d];
+                        let fullString = bfsInfo[i].fullString + this.state.data[chCoords[0]][chCoords[1]].character;
                         return {
                             character: this.state.data[chCoords[0]][chCoords[1]].character,
                             coordinate: d,
-                            distance: i + 1,
-                            visited: true,
-                            parentCoordinate: bfsInfo[i].coordinate,
+                            fullString: fullString,
+                            coordinateHistory: coords,
                             parentCoordinateIndex: i
                         }
                     })
 
                     bfsInfo.push(...neighboursInfo)
-
-                    let coords = bfsInfo[i].coordinate.split("").map(e => parseInt(e));
-                    this.state.data[coords[0]][coords[1]].visited = true;
                 }
+
+                for (let node of neighboursInfo) {
+                    if (node.fullString === string) {
+                        found = true;
+                        finalNode = node;
+                    }
+                }
+
+                if (found) {
+                    break;
+                }
+
                 ++i;
             }
-            console.log(bfsInfo)
+
+            if (found) {
+                console.log("found ", finalNode);
+            }
+            else {
+                console.log("Not found");
+            }
+
             if (found) {
                 // calls api to check if word present in dictionary
                 fetch("http://localhost:3000/word/" + string)
                     .then(data => data.json())
-                    .then(data => {                        
+                    .then(data => {
                         if (data.isTrue) {
-                            let index = bfsInfo.length - 1;
                             this.setState((prevState) => {
                                 prevState.data.forEach(elements => {
                                     elements.forEach(element => {
@@ -149,12 +202,13 @@ class Board extends Component {
                                     })
                                 });
 
-                                while (index || (index === 0)) {
-                                    let lastItem = bfsInfo[index];
-                                    let coords = lastItem.coordinate.split("");
+                                for (let index of finalNode.coordinateHistory) {
+                                    let coords = index.split("").map(d => parseInt(d));
                                     prevState.data[coords[0]][coords[1]].selected = true;
-                                    index = lastItem.parentCoordinateIndex;
                                 }
+
+                                prevState.validWords.push(string);
+
                                 prevState.count += 1;
                                 return prevState
                             })
@@ -181,6 +235,7 @@ class Board extends Component {
                 {board}
                 <Search search={this.search} />
                 <Counter count={this.state.count} />
+                <Words data={this.state.validWords} />
             </div>
         )
     }
