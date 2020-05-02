@@ -1,13 +1,20 @@
 class GameContainerController < ApplicationController
-
-    def get_random_characters        
-        max_character = 4  # Set Default character  
-        puts request.query_parameters.max       
-        if request.query_parameters[:max]
-            max_character = (request.query_parameters[:max]).to_i
-        end                
-        @characters = (0...max_character).map {(0...max_character).map {(65 + rand(26)).chr}.join }
-        render json:{board: @characters}
+    
+    @@words = {}
+    
+    def initialize_dict 
+        if @@words.empty?            
+            path =  File.join(Rails.root, "app", "assets", "dictionary.txt")
+            File.open(path) do |file|
+                file.each do |line|
+                    @@words[line.strip] = true
+                end
+            end
+        end
     end
-
+    def check_word        
+        initialize_dict
+        word = params[:word].upcase
+        render json:{isTrue: @@words[word]}
+    end
 end

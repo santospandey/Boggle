@@ -8,3 +8,11 @@
     font-size: 24px;
     font-weight: bold;
 }
+
+.container{
+    display: flex;
+}
+
+.container>div{
+    width: 50%;
+}
