@@ -1,28 +1,13 @@
-import React, {Component} from "react"
-import css from "../css/style.module.css"
+import React from "react"
+import cssModule from "../css/Square.module.css"
 
-class Square extends Component{
-    constructor(){
-        super()
-        this.state = {
-
-        }
-    }
-
-    render() {
-        let styleObj = {
-            background: this.props.data.selected ? "green" : "yellowgreen"
-        }
-
-        return (
-            <span
-                style={styleObj}
-                className={cssModule.square}
-            >
-                {this.props.data.character}
-            </span>
-        )
-    }
+function Square(props) {
+    const {background, character} = props.data
+    return (
+        <span className={cssModule.square} style={{background: background}}>
+            {character}
+        </span>
+    )
 }
 
 export default Square

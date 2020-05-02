@@ -5,6 +5,7 @@ import Counter from "./Counter"
 import Words from "./Words"
 import Timer from "./Timer"
 import cssModule from "../css/style.module.css"
+console.log("css module from board ", cssModule)
 
 class Board extends Component {
     constructor() {
@@ -15,8 +16,12 @@ class Board extends Component {
             count: 0,
             data: [],
             graph: {},
-            validWords: []
-        }        
+            validWords: [],
+            css:{
+                selectedBg: "#287328",
+                background: "#96d53c"
+            }
+        }
         this.search = this.search.bind(this)
         this.initialize = this.initialize.bind(this)
     }
@@ -71,7 +76,7 @@ class Board extends Component {
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         const index = Math.floor(Math.random() * 26)
         return letters[index]
-    }    
+    }
 
 
     getCoordinates(char) {
@@ -187,7 +192,7 @@ class Board extends Component {
                 console.log("Not found");
             }
 
-            if (found) {                
+            if (found) {
                 // calls api to check if word present in dictionary
                 fetch("http://localhost:3000/word/" + string)
                     .then(data => data.json())
@@ -238,26 +243,20 @@ class Board extends Component {
             let squares = subarr.map((elem, j) =>
                 <Square
                     key={`${i}-${j}`}
-                    data={{ ...elem, i, j }}
+                    data={{character: elem.character, background: elem.selected?this.state.css.selectedBg: this.state.css.background}}
                 />)
 
             return <div key={i}>{squares}</div>
-        })        
+        })
 
-        console.log("board ", board)
-        return <div>{board}</div>
-    }
-
-    render() {        
-        const board = this.getDOM()                    
         return (
             <div className={cssModule.container}>
                 <div>
                     {this.state.start ?
-                    <div>
-                        {board}
-                        <Search search={this.search} />
-                    </div> : ""}
+                        <div>
+                            {board}
+                            <Search search={this.search} />
+                        </div> : ""}
                 </div>
                 <div>
                     <Timer display={this.state.start} start={() => this.start()} stop={() => this.stop()} />

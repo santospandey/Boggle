@@ -1,8 +1,9 @@
 import React from "react"
+import cssModule from "../css/Search.module.css"
 
 function Search(props) {
     return (
-        <div style={{ padding: 10 }}>            
+        <div className={cssModule['input-box']}>
             <input type="text" name="searchWord" onKeyDown={props.search} placeholder="Enter words..."/>
         </div>
     )

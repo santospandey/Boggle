@@ -5,6 +5,9 @@
     "test": "jest"
   },
   "jest": {
+    "moduleNameMapper": {
+      "\\.css$": "<rootDir>/app/javascript/packs/css/style.module.jest.css"
+    },
     "roots": [
       "test/javascript"
     ],
