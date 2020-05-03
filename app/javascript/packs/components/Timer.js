@@ -15,7 +15,7 @@ class Timer extends Component {
 
     start() {
         this.props.start();
-        let intervalId = setInterval(this.timer, 1000);
+        let intervalId = setInterval(this.timer, 1000)
         this.setState({
             intervalId: intervalId
         })
@@ -39,7 +39,7 @@ class Timer extends Component {
     stop() {
         this.props.stop();
         this.setState((prevState) => {
-            clearInterval(prevState.intervalId);
+            clearInterval(prevState.intervalId)
             return {
                 time: 0,
                 intervalId: null
