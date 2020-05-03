@@ -16,3 +16,11 @@
 .container>div{
     width: 50%;
 }
+
+.wrapper{
+    display: flex;
+}
+
+.wrapper>div{
+    width: 50%;
+}

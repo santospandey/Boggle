@@ -8,7 +8,7 @@ function Words(props) {
 
     return (
         <div>
-            {props.data.length?<h3>Selected Words</h3>:""}
+            {props.data.length?<h2>Searched Words</h2>:""}
             {getWords(props.data)}
         </div>
     )

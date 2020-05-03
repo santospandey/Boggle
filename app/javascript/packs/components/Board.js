@@ -26,12 +26,16 @@ class Board extends Component {
         this.search = this.search.bind(this)
         this.initialize = this.initialize.bind(this)
     }
+    
+    componentDidMount(){
+        this.initialize({start: false})
+    }
 
-    initialize() {
+    initialize(initObj) {
         this.setState((prevState) => {
             return {
                 count: 0,
-                start: true,
+                start: initObj.start,
                 searchController: new SearchController(prevState.size),
                 data: this.generateData(prevState.size),
                 validWords: []
@@ -112,7 +116,7 @@ class Board extends Component {
     }
 
     start() {
-        this.initialize()
+        this.initialize({start: true})
     }
 
     stop() {
@@ -138,13 +142,15 @@ class Board extends Component {
 
         return (
             <div className={cssModule.container}>
+                <div>{board}<Search search={this.search} disabled={!this.state.start}/></div>
                 <div>
-                    {this.state.start ? <div>{board}<Search search={this.search} /></div> : ""}
-                </div>
-                <div>
-                    <Timer display={this.state.start} start={() => this.start()} stop={() => this.stop()} />
-                    <Counter count={this.state.count} />
-                    <Words data={this.state.validWords} />
+                    <div className={cssModule.wrapper}>
+                        <Timer display={this.state.start} start={() => this.start()} stop={() => this.stop()} />
+                        <Counter count={this.state.count} />
+                    </div>
+                    <div>
+                        <Words data={this.state.validWords} />
+                    </div>                                        
                 </div>
             </div>
         )

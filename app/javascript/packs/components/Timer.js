@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import cssModule from "../css/Timer.module.css"
 
 class Timer extends Component {
     constructor() {
@@ -33,7 +34,6 @@ class Timer extends Component {
                 time: prevState.time + 1
             }
         })
-
     }
 
     stop() {
@@ -51,7 +51,7 @@ class Timer extends Component {
         return (
             <div>
                 <h3>{Math.floor((120-this.state.time) / 60)}:{(120-this.state.time) % 60}</h3>
-                {this.props.display? "":<button type="button" onClick={this.start}>Start</button>}
+                {this.props.display? "":<button type="button" onClick={this.start} className={cssModule.startBtn}>Start</button>}
             </div>
         )
     }
