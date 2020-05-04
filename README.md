@@ -38,7 +38,7 @@ Things you may want to cover:
 
 *Also should have git already installed
 
-*Clone the project repository from bitbucket here is command "git clone https://santospandey@bitbucket.org/santospandey/boggle-game.git"
+*Clone the project repository 
 
 *And do "bundle install" before that if bundler is old update bundler (gem install bundler)
 
