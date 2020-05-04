@@ -1,6 +1,6 @@
 .container{
     display: flex;
-    flex-direction: column;            
+    flex-direction: column;      
 }
 
 .timer{
@@ -11,7 +11,7 @@
 
 .innerContainer{
     display: flex;
-    flex-direction: row;
+    flex-direction: row;    
 }
 
 .innerContainer>div{

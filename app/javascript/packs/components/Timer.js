@@ -55,8 +55,8 @@ class Timer extends Component {
         const minutes = (this.state.constants.maxTime-this.state.time) % this.state.constants.secInMin
         
         return (
-            <div>
-                {this.state.time > 0? <h2 style={{height:25}}>{hours}:{minutes}</h2>: ""}
+            <div style={{height: 70}}>
+                {this.state.time > 0? <h2>{hours}:{minutes}</h2>: ""}
                 {this.props.display? <button type="button" onClick={this.start} className={cssModule.startBtn}>Start</button>: ""}
             </div>
         )
