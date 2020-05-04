@@ -1,0 +1,19 @@
+.container{
+    display: flex;
+    flex-direction: column;            
+}
+
+.timer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.innerContainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.innerContainer>div{
+    width: 50%;
+}

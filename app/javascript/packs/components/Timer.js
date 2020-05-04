@@ -56,7 +56,7 @@ class Timer extends Component {
         
         return (
             <div>
-                {this.state.time > 0? <h3>{hours}:{minutes}</h3>: ""}
+                {this.state.time > 0? <h2 style={{height:25}}>{hours}:{minutes}</h2>: ""}
                 {this.props.display? <button type="button" onClick={this.start} className={cssModule.startBtn}>Start</button>: ""}
             </div>
         )

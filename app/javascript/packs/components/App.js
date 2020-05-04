@@ -1,5 +1,6 @@
 import React, { Component } from "react"
-import Board from "./Board"
+import Container from "./Container"
+
 
 class App extends Component{
     constructor(){
@@ -8,7 +9,7 @@ class App extends Component{
 
     render(){
         return(
-            <Board />
+            <Container />
         )
     }
 }
