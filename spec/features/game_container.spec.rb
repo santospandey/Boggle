@@ -4,12 +4,16 @@ RSpec.configure do |config|
     config.include RSpec::Rails::RequestExampleGroup, type: :feature
 end
 
-RSpec.describe "Game Container Testing" do
-    describe "GET /random_characters" do
-        it "returns random characters" do
-            get("/random_characters")
-            json = JSON.parse(response.body)
-            expect(json["board"].length).to eql(4)
+RSpec.describe "Check if word is present in dictionary" do
+    describe "GET /word/{word}" do
+        it "returns True if present in dictionary" do
+            get("/rest/v1/word/hello")
+            json = JSON.parse(response.body)            
+            expect(json["isTrue"]).to eql(true)
+
+            get("/rest/v1/word/mzoaor")
+            json = JSON.parse(response.body)            
+            expect(json["isTrue"]).to eql(nil)
         end
     end
 end
