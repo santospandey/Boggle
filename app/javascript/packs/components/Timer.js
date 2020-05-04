@@ -6,25 +6,28 @@ class Timer extends Component {
         super();
         this.state = {
             time: 0,
-            intervalId: null
+            intervalId: null,
+            constants: {
+                maxTime: 120, // maximum time in seconds timer will run
+                secInMin: 60  // 1 min = 60 sec
+            }
         }
 
         this.start = this.start.bind(this)
-        this.timer = this.timer.bind(this)
+        this.update = this.update.bind(this)
         this.stop = this.stop.bind(this)
     }
 
     start() {
         this.props.start();
-        let intervalId = setInterval(this.timer, 1000)
+        let intervalId = setInterval(this.update, 1000)
         this.setState({
             intervalId: intervalId
         })
     }
 
-    timer() {
-        if (this.state.time >= 120) {
-            console.log("Timeout ...")
+    update() {
+        if (this.state.time >= this.state.constants.maxTime) {            
             this.stop();
             return;
         }
@@ -48,10 +51,13 @@ class Timer extends Component {
     }
 
     render() {
+        const hours = Math.floor((this.state.constants.maxTime-this.state.time) / this.state.constants.secInMin)
+        const minutes = (this.state.constants.maxTime-this.state.time) % this.state.constants.secInMin
+        
         return (
             <div>
-                <h3>{Math.floor((120-this.state.time) / 60)}:{(120-this.state.time) % 60}</h3>
-                {this.props.display? "":<button type="button" onClick={this.start} className={cssModule.startBtn}>Start</button>}
+                {this.state.time > 0? <h3>{hours}:{minutes}</h3>: ""}
+                {this.props.display? <button type="button" onClick={this.start} className={cssModule.startBtn}>Start</button>: ""}
             </div>
         )
     }

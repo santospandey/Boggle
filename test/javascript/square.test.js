@@ -1,5 +1,5 @@
 import React from "react"
-import "./enzyme.configure"
+import "../../enzyme.configure"
 import { shallow } from "enzyme"
 
 import Square from "../../app/javascript/packs/components/Square"

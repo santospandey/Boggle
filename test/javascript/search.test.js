@@ -1,5 +1,5 @@
 import React from "react"
-import "./enzyme.configure"
+import "../../enzyme.configure"
 import { shallow } from "enzyme"
 
 import Search from "../../app/javascript/packs/components/Search"

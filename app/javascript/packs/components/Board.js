@@ -4,7 +4,7 @@ import Search from "./Search"
 import Counter from "./Counter"
 import Words from "./Words"
 import Timer from "./Timer"
-import cssModule from "../css/style.module.css"
+import cssModule from "../css/Board.module.css"
 import { SearchController } from "../controllers/Search"
 import { config } from "../config"
 
@@ -27,10 +27,6 @@ class Board extends Component {
         this.initialize = this.initialize.bind(this)
     }
     
-    componentDidMount(){
-        
-    }
-
     initialize() {
         this.setState((prevState) => {
             return {
@@ -64,7 +60,7 @@ class Board extends Component {
         event.target.value = ""
     }
 
-    validateWord(word){
+    validateWord(word) {
         let valid = true
         if (word.length < 2) {
             alert("Please enter word of at least 2 characters");
@@ -80,9 +76,9 @@ class Board extends Component {
     search(event) {
         event.persist();
         if (event.keyCode === 13) {
-            let word = event.target.value.toUpperCase()            
+            let word = event.target.value.toUpperCase()
             const validate = this.validateWord(word)
-            if(!validate){return}
+            if (!validate) { return }
 
             const searchResult = this.state.searchController.search(word, this.state)
 
@@ -142,15 +138,15 @@ class Board extends Component {
 
         return (
             <div className={cssModule.container}>
-                <div>{board}{this.state.start?<Search search={this.search} disabled={!this.state.start}/>:""}</div>
+                <div>{board}{this.state.start ? <Search search={this.search} disabled={!this.state.start} /> : ""}</div>
                 <div>
                     <div className={cssModule.wrapper}>
-                        <Timer display={this.state.start} start={() => this.start()} stop={() => this.stop()} />
-                        <Counter count={this.state.count} />
+                        <Timer display={!this.state.start} start={() => this.start()} stop={() => this.stop()} />
+                        {this.state.count ? <Counter count={this.state.count} /> : ""}
                     </div>
                     <div>
-                        <Words data={this.state.validWords} />
-                    </div>                                        
+                        {this.state.validWords.length ? <Words data={this.state.validWords} /> : ""}
+                    </div>
                 </div>
             </div>
         )
